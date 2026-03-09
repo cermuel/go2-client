@@ -1,0 +1,17 @@
+{
+  "short_name": "go2",
+  "name": "go2 link shortener",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#111111",
+  "background_color": "#f7f7f5",
+  "description": "Minimal short links with custom codes, email-based management, and click analytics."
+}
