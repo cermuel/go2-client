@@ -1,4 +1,4 @@
-import { BASE_URL } from "#/constants";
+import { FRONTEND_URL } from "#/constants";
 import type { UrlData } from "#/types/manage";
 import { FiCheck, FiCopy, FiExternalLink } from "react-icons/fi";
 import { LuQrCode } from "react-icons/lu";
@@ -30,7 +30,7 @@ const LinkSummaryCard = ({
   onOpen: (value: string) => void;
   onShowQr: (value: string) => void;
 }) => {
-  const shortUrl = `${BASE_URL}/${urlData.customCode}`;
+  const shortUrl = `${FRONTEND_URL}/${urlData.customCode}`;
 
   return (
     <div style={outerCardStyle}>

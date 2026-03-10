@@ -1,4 +1,4 @@
-import { BASE_URL } from "#/constants";
+import { FRONTEND_URL } from "#/constants";
 import { useState } from "react";
 import { FiCheck, FiCopy, FiExternalLink } from "react-icons/fi";
 import { LuQrCode } from "react-icons/lu";
@@ -7,7 +7,7 @@ import QrCodeModal from "./qr-code-modal";
 const ResultBar = ({ code }: { code: string }) => {
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
-  const shortUrl = `${BASE_URL}/${code}`;
+  const shortUrl = `${FRONTEND_URL}/${code}`;
   const iconBtnStyle = {
     background: "transparent",
     border: "1px solid var(--border)",
