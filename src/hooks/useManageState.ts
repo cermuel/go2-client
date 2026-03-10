@@ -6,7 +6,9 @@ import {
   countBy,
   extractUrls,
   getClicksByDay,
-  getLast7Days,
+  buildTimelineSeries,
+  getDaysRange,
+  getLastNDays,
 } from "#/utils/helpers";
 
 const PROFILES_KEY = "go2-manage-profiles";
@@ -24,6 +26,9 @@ export const useManageState = () => {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [qrTarget, setQrTarget] = useState<string | null>(null);
+  const [range, setRange] = useState<"7d" | "30d" | "365d" | "custom">("7d");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
 
   useEffect(() => {
     try {
@@ -47,7 +52,10 @@ export const useManageState = () => {
           const legacy = JSON.parse(legacyRaw) as StoredProfile;
           if (legacy?.email) {
             profiles = [
-              { email: legacy.email, name: legacy.name || legacy.email.split("@")[0] },
+              {
+                email: legacy.email,
+                name: legacy.name || legacy.email.split("@")[0],
+              },
             ];
           }
           localStorage.removeItem("go2-manage-profile");
@@ -67,7 +75,10 @@ export const useManageState = () => {
   }, []);
 
   const saveProfile = (next: StoredProfile) => {
-    const merged = [next, ...savedProfiles.filter((item) => item.email !== next.email)];
+    const merged = [
+      next,
+      ...savedProfiles.filter((item) => item.email !== next.email),
+    ];
     localStorage.setItem(PROFILES_KEY, JSON.stringify(merged));
     localStorage.setItem(ACTIVE_EMAIL_KEY, next.email);
     setSavedProfiles(merged);
@@ -98,7 +109,9 @@ export const useManageState = () => {
     setLoadingDetails(true);
     setError("");
     try {
-      const { data } = await axios.get(`${BASE_URL}/url/${code}?email=${encodeURIComponent(email)}`);
+      const { data } = await axios.get(
+        `${BASE_URL}/url/${code}?email=${encodeURIComponent(email)}`,
+      );
       setUrlData(data);
       setSelectedCode(code);
     } catch (err: any) {
@@ -112,7 +125,9 @@ export const useManageState = () => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await axios.get(`${BASE_URL}/url/email/${encodeURIComponent(email)}`);
+      const { data } = await axios.get(
+        `${BASE_URL}/url/email/${encodeURIComponent(email)}`,
+      );
       const items = extractUrls(data);
       if (!items.length) {
         setUrls([]);
@@ -128,7 +143,10 @@ export const useManageState = () => {
       setShowModal(false);
       await loadUrlDetails(items[0].customCode, email);
     } catch (err: any) {
-      setError(err?.response?.data?.message?.[0] ?? "Could not find URLs for this email");
+      setError(
+        err?.response?.data?.message?.[0] ??
+          "Could not find URLs for this email",
+      );
     } finally {
       setLoading(false);
     }
@@ -151,11 +169,27 @@ export const useManageState = () => {
 
   const clicks = urlData?.clicks ?? [];
   const byCountry = useMemo(() => countBy(clicks, "country"), [clicks]);
+  const byCity = useMemo(() => countBy(clicks, "city"), [clicks]);
+
+  console.log({ clicks });
   const byOS = useMemo(() => countBy(clicks, "os"), [clicks]);
   const byDevice = useMemo(() => countBy(clicks, "device"), [clicks]);
-  const last7 = useMemo(() => getLast7Days(), []);
-  const clicksByDay = useMemo(() => getClicksByDay(clicks, last7), [clicks, last7]);
-  const maxDay = Math.max(...Object.values(clicksByDay), 1);
+  const rangeDays = useMemo(() => {
+    if (range === "7d") return getLastNDays(7);
+    if (range === "30d") return getLastNDays(30);
+    if (range === "365d") return getLastNDays(365);
+    return getDaysRange(customStart, customEnd);
+  }, [customEnd, customStart, range]);
+
+  const clicksByDay = useMemo(
+    () => getClicksByDay(clicks, rangeDays),
+    [clicks, rangeDays],
+  );
+  const timelineSeries = useMemo(
+    () => buildTimelineSeries({ clicks, range, customStart, customEnd }),
+    [clicks, customEnd, customStart, range],
+  );
+  const maxDay = Math.max(...timelineSeries.map((item) => item.value), 1);
 
   return {
     profile,
@@ -177,10 +211,18 @@ export const useManageState = () => {
     copyText,
     clicks,
     byCountry,
+    byCity,
     byOS,
     byDevice,
-    last7,
+    range,
+    setRange,
+    customStart,
+    setCustomStart,
+    customEnd,
+    setCustomEnd,
+    rangeDays,
     clicksByDay,
+    timelineSeries,
     maxDay,
   };
 };

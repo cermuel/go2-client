@@ -44,10 +44,18 @@ function Manage() {
     copyText,
     clicks,
     byCountry,
+    byCity,
     byOS,
     byDevice,
-    last7,
+    range,
+    setRange,
+    customStart,
+    setCustomStart,
+    customEnd,
+    setCustomEnd,
+    rangeDays,
     clicksByDay,
+    timelineSeries,
     maxDay,
   } = useManageState();
 
@@ -147,9 +155,15 @@ function Manage() {
                   </div>
 
                   <ClicksTimeline
-                    days={last7}
-                    clicksByDay={clicksByDay}
+                    series={timelineSeries}
                     maxDay={maxDay}
+                    range={range}
+                    onRangeChange={setRange}
+                    customStart={customStart}
+                    customEnd={customEnd}
+                    onCustomStartChange={setCustomStart}
+                    onCustomEndChange={setCustomEnd}
+                    label="clicks"
                   />
 
                   <div
@@ -162,6 +176,7 @@ function Manage() {
                     }}
                   >
                     <BarChart data={byCountry} label="by country" />
+                    <BarChart data={byCity} label="by city" />
                     <BarChart data={byOS} label="by os" />
                   </div>
                   <BarChart data={byDevice} label="by device" />
