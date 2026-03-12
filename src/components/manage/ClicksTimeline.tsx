@@ -149,7 +149,7 @@ const ClicksTimeline = ({
                   borderRadius: "6px",
                   opacity: hoveredIndex === index ? 1 : 0,
                   pointerEvents: "none",
-                  transition: "opacity 0.1s ease",
+                  transition: "opacity 0.2s ease",
                   whiteSpace: "nowrap",
                 }}
               >

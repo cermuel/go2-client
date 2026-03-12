@@ -85,10 +85,10 @@ function Home() {
     setError("");
     try {
       const { data } = await axios.get(`${BASE_URL}/url/code/${debouncedCode}`);
-      if (data.data) {
-        setCheckError(true);
-      } else {
-        setCheckSuccess(true);
+      if (data) {
+        setCheckError(data.data);
+
+        setCheckSuccess(!data.data);
       }
     } catch (e) {
       console.log({ e });
@@ -139,10 +139,7 @@ function Home() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ ...style, background: "var(--bg)" }}
-    >
+    <div className="min-h-screen" style={{ ...style, background: "var(--bg)" }}>
       <AppNavbar dark={dark} onToggle={toggle} />
 
       <div className="flex flex-col items-center justify-center px-4 py-14">
@@ -160,7 +157,10 @@ function Home() {
 
         <div
           className="w-full max-w-lg rounded-lg border p-6 space-y-4"
-          style={{ background: "var(--bg-subtle)", borderColor: "var(--border)" }}
+          style={{
+            background: "var(--bg-subtle)",
+            borderColor: "var(--border)",
+          }}
         >
           <div className="space-y-1">
             <Label>destination</Label>
