@@ -12,25 +12,8 @@ export const Route = createFileRoute("/$code")({
       return { error: notFoundMessage } as const;
     }
 
-    try {
-      const response = await fetch(`${BASE_URL}/${encodeURIComponent(code)}`, {
-        method: "GET",
-        redirect: "follow",
-      });
-
-      if (response.ok && response.redirected) {
-        window.location.replace(response.url);
-        return { error: null } as const;
-      }
-
-      if (response.status === 404) {
-        return { error: notFoundMessage } as const;
-      }
-
-      return { error: genericErrorMessage } as const;
-    } catch {
-      return { error: genericErrorMessage } as const;
-    }
+  window.location.replace(`${BASE_URL}/${encodeURIComponent(code)}`);
+  return { error: null } as const;
   },
   component: RouteComponent,
 });
